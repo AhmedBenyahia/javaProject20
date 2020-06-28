@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Date;
 
 /**
  * The type Account.
@@ -37,6 +40,8 @@ public class Account {
 
 	private Boolean isActive;
 
+	private LocalDate lastInterestCalDate;
+
 	/**
 	 * Instantiates a new Account.
 	 */
@@ -58,6 +63,7 @@ public class Account {
 		this.clientId = clientId;
 		this.accountBankId = accountBankId;
 		this.accountBankName = accountBankName;
+		this.lastInterestCalDate = LocalDate.now();
 	}
 
 	/**
@@ -201,7 +207,7 @@ public class Account {
 	}
 
 	/**
-	 * Gets interest percentage (%).
+	 * Gets interest percentage (%) By year.
 	 *
 	 * @return the interest
 	 */
@@ -212,9 +218,9 @@ public class Account {
 			if (balance > 1000) return 0.2;
 			return 0.2;
 		} else {
-			if (balance < 1000) return 5;
-			else if (balance < 2000) return 10;
-			return 20;
+			if (balance < 1000) return 2;
+			else if (balance < 2000) return 5;
+			return 10;
 		}
 	}
 
@@ -243,5 +249,15 @@ public class Account {
 	public void addToBalance(double amount) {
 
 		this.balance += amount;
+	}
+
+	/**
+	 * Add interest to account balance.
+	 */
+	public void addInterestToAccountBalance() {
+		Period period = Period.between(LocalDate.now(), lastInterestCalDate);
+		float diff = period.getDays();
+		 balance += (balance/100) * getInterest() * (diff / 365);
+		 lastInterestCalDate = LocalDate.now();
 	}
 }

@@ -7,6 +7,9 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * The type Employee.
+ */
 @Entity
 @Table(name = "employee")
 public class Employee extends Personne {
@@ -23,6 +26,8 @@ public class Employee extends Personne {
 	private String employmentBankId;
 
 	private String employmentBankName;
+
+	private String secretCode;
 
 	/**
 	 * Instantiates a new Employee.
@@ -181,6 +186,26 @@ public class Employee extends Personne {
 	public void setEmploymentBankName(String employmentBankName) {
 
 		this.employmentBankName = employmentBankName;
+	}
+
+	/**
+	 * Gets secret code.
+	 *
+	 * @return the secret code
+	 */
+	public String getSecretCode() {
+
+		return secretCode;
+	}
+
+	/**
+	 * Sets secret code.
+	 *
+	 * @param secretCode the secret code
+	 */
+	public void setSecretCode(String secretCode) {
+
+		this.secretCode = secretCode;
 	}
 
 	@Override

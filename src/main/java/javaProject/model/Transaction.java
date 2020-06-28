@@ -61,7 +61,7 @@ public class Transaction {
 	 * @param accountId the account id
 	 */
 	public Transaction(String transactionType, double amount, String performedBy, LocalDate performedAt,
-			String accountBankId, String accountBankName, Long accountId) {
+			String accountBankName, String accountBankId, Long accountId) {
 
 		this.transactionType = transactionType;
 		this.amount = amount;

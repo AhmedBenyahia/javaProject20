@@ -2,12 +2,14 @@
 package javaProject;
 
 import javaProject.controller.ClientController;
+import javaProject.controller.EmployeeController;
 import javaProject.model.Account;
 import javaProject.model.Bank;
 import javaProject.model.Client;
 import javaProject.model.Employee;
 import javaProject.model.Transaction;
 import javaProject.service.ClientService;
+import javaProject.service.EmployeeService;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -32,6 +34,7 @@ import java.util.Scanner;
 public class DatabaseConnection {
 
 	private static ClientService clientService;
+	private static EmployeeService employeeService;
 	private static Scanner  scanner;
 
 
@@ -39,10 +42,11 @@ public class DatabaseConnection {
 
 		scanner = new Scanner(System.in);
 		clientService = new ClientService();
+		employeeService = new EmployeeService();
 
-		initDB();
-		testDB();
-		// Who are you action
+//		initDB();
+//		testDB();
+		// Who are you ?!
 		String actionMenu =
 				"Login as: \n 1- client \n 2- employee \n 3- manager\n";
 		String response;
@@ -63,13 +67,32 @@ public class DatabaseConnection {
 
 			// Get Client
 			Client client = clientService.getClientById(idClient);
-			if (client.getSecretCode().equals(code)) {
+			if (client != null && client.getSecretCode().equals(code)) {
 				System.out.println("Login success !!");
 				ClientController.run(client);
 			} else {
-				System.out.println("Somethings went wrong !!");
+				System.out.println("Your Id or you secret code is wrong !!");
 			}
 
+		} else if (response.contains("2")) {
+			// username
+			String msg = "Enter you employeeId: \n";
+			System.out.println(msg);
+			Long idEmployee = scanner.nextLong();
+			// password
+			msg = "Enter you secret code: \n";
+			System.out.println(msg);
+			String code = scanner.next();
+
+			// Get Client
+			System.out.println("idEmployee:" + idEmployee);
+			Employee employee = employeeService.getEmployeeById(idEmployee);
+			if (employee != null && employee.getSecretCode().equals(code)) {
+				System.out.println("Login success !!");
+				EmployeeController.run(employee);
+			} else {
+				System.out.println("Your Id or you secret code is wrong !!");
+			}
 		}
 	}
 
@@ -212,10 +235,11 @@ public class DatabaseConnection {
 					"Ajim Derjba",
 					"23", "53415455", "homme", "1351214",
 					"ahmed@benyahia.tn", true, "4135",
-					"assistant", 1200);
+					"Manager", 1200);
 			employee.setEmploymentBankId("1");
 			employee.setEmploymentBankName("ATB");
 			employee.setActive(true);
+			employee.setSecretCode("0000");
 			session.save(employee);
 			System.out.println("New Employee created");
 
@@ -230,7 +254,7 @@ public class DatabaseConnection {
 
 
 			//Create new account
-			Account account = new Account(Account.MAXI_SAVINGS, 999, (long) 2, "1", "ATB");
+			Account account = new Account(Account.MAXI_SAVINGS, 999, (long) 2, "ATB", "1");
 			account.setActive(true);
 			session.save(account);
 			System.out.println("New Account created");

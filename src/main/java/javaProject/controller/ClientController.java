@@ -37,10 +37,12 @@ public class ClientController {
 		while (true) {
 			// Choice action
 			String actionMenu =
-					"Choice which action you want to perform: \n 1- depose \n 2- withdraw \n 3- show account list\n";
+					"Choice which action you want to perform: \n 1- depose \n 2- withdraw \n" +
+							" 3- show account list\n 4- Transfer fund to an other account\n" +
+							" 5- logout and save changes";
 			String response;
+			System.out.println(actionMenu);
 			do {
-				System.out.println(actionMenu);
 				response = scanner.nextLine();
 			}  while (response.isEmpty());
 
@@ -57,13 +59,65 @@ public class ClientController {
 				String msg = "Here is you account list: \n";
 				System.out.println(msg);
 				accounts.forEach(o -> {
-					System.out.println(accounts.toString());
+					System.out.println(o.toString());
 				});
-			} else {
+			}
+			else if (response.contains("4")) {
+				String msg = "How much you want to transfer ?? \n";
+				System.out.println(msg);
+				double amount = scanner.nextDouble();
+
+				msg = "From which account ?? \n";
+				System.out.println(msg);
+				Long accountIdSource = scanner.nextLong();
+
+				msg = "In which account ?? \n";
+				System.out.println(msg);
+				Long accountIdReceiver = scanner.nextLong();
+				System.out.println("Fetching receiver account details..");
+				Account accountReceiver = accountService.getAccountById(accountIdReceiver);
+
+				System.out.println("Fetching source account details..");
+				Account accountSource = accountService.getAccountById(accountIdSource);
+
+				// Check if there is enough fund in the account
+				if (accountSource.getBalance() >= amount) {
+					// Perform action
+					System.out.println("withdraw fund from account..");
+					accountSource.removeFromBalance(amount);
+					accountService.updateAccount(accountSource);
+
+					System.out.println("Depose fund to account..");
+					accountReceiver.addToBalance(amount);
+					accountService.updateAccount(accountReceiver);
+
+
+					// Create a WITHDRAW transaction
+					System.out.println("Create WITHDRAW transaction..");
+					Transaction transaction =
+							new Transaction(Transaction.WITHDRAW, amount, "0",
+									LocalDate.now(), accountSource.getAccountBankId(),
+									accountSource.getAccountBankName(), accountIdSource);
+					transactionService.addNewTransaction(transaction);
+					System.out.println("Source account New Balance: " + accountSource.getBalance()+ "DT");
+
+					// Create a DEPOSIT transaction
+					System.out.println("Create transaction..");
+					transaction = new Transaction(Transaction.DEPOSIT, amount, "0", LocalDate.now(),
+							accountReceiver.getAccountBankId(),
+							accountReceiver.getAccountBankName(), accountIdReceiver);
+					transactionService.addNewTransaction(transaction);
+					System.out.println("Receiver accountReceiver New Balance: " + accountReceiver.getBalance()+ "DT");
+
+				} else {
+					System.out.println("No Enough fund in account!!");
+				}
+			}
+			else if (response.contains("5")) {
 				break;
 			}
 		}
-
+	/* Submit all transaction. The transaction will not be submitted until the client logout */
 		cleaning();
 
 	}
@@ -83,14 +137,22 @@ public class ClientController {
 
 		// Check if there is enough fund in the account
 		if (account.getBalance() >= amount) {
-			// Perform action
+
+			// Withdraw fund
 			System.out.println("withdraw fund from account..");
 			account.removeFromBalance(amount);
 			accountService.updateAccount(account);
+
+			// Depose fund
+			System.out.println("Add fund to account..");
+			account.addToBalance(amount);
+			accountService.updateAccount(account);
+
 			// Create a transaction
 			System.out.println("Create transaction..");
 			Transaction transaction =
-					new Transaction(Transaction.WITHDRAW, amount, "0", LocalDate.now(), account.getAccountBankId(), account.getAccountBankName(), accountId);
+					new Transaction(Transaction.WITHDRAW, amount, "0", LocalDate.now(),
+							account.getAccountBankId(), account.getAccountBankName(), accountId);
 			transactionService.addNewTransaction(transaction);
 			System.out.println("DONE");
 			System.out.println("New Balance: " + account.getBalance()+ "DT");
@@ -127,6 +189,7 @@ public class ClientController {
 	}
 
 	private static void cleaning() {
+		System.out.println(" Saving changes...");
 		clientService.submitChange();
 		accountService.submitChange();
 		transactionService.submitChange();

@@ -1,21 +1,19 @@
 package javaProject.service;
 
-import javaProject.model.Client;
+import javaProject.model.Employee;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import java.util.List;
-
-public class ClientService {
+public class EmployeeService {
 
 	private SessionFactory sessionFactory;
 	private StandardServiceRegistry registry;
 	private Session session;
 
-	public ClientService() {
+	public EmployeeService() {
 		System.out.println("Trying to connect to DB...");
 		// configures settings from hibernate.cfg.xml
 		registry = new StandardServiceRegistryBuilder().configure().build();
@@ -27,33 +25,29 @@ public class ClientService {
 		System.out.println("Connection established");
 	}
 
-	public void addNewClient(Client client) {
-		client.setActive(true);
-		session.save(client);
+	public void addNewEmployee(Employee employee) {
+		employee.setActive(true);
+		session.save(employee);
 	}
 
-	public void updateClient(Client client) {
-		session.update(client);
+	public void updateEmployee(Employee employee) {
+		session.update(employee);
 	}
 
-	public void deleteClient(Client client) {
-		session.remove(client);
+	public void deleteEmployee(Employee employee) {
+		session.remove(employee);
 	}
 
-	public Client getClientById(Long idClient) {
-		return session.get(Client.class, idClient);
+	public Employee getEmployeeById(Long idEmployee) {
+		return session.get(Employee.class, idEmployee);
 	}
 
-	public void getClientByName(String name) {
-		session.createQuery("FROM Client E WHERE E.firstName = " + name);
+	public void getEmployeeByName(String name) {
+		session.createQuery("FROM Employee E WHERE E.firstName = " + name);
 	}
 
 	public void submitChange() {
 		session.getTransaction().commit();
 		session.close();
-	}
-
-	public List getAllClient() {
-		return  session.createQuery("from Client").list();
 	}
 }
