@@ -48,7 +48,7 @@ public class DatabaseConnection {
 //		testDB();
 		// Who are you ?!
 		String actionMenu =
-				"Login as: \n 1- client \n 2- employee \n 3- manager\n";
+				"Login as: \n 1- client \n 2- employee \n";
 		String response;
 		do {
 			System.out.println(actionMenu);
